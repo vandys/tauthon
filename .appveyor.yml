@@ -1,8 +1,7 @@
 os: Visual Studio 2008
 
 platform:
-    - x64
-    # - x86
+    - x86
 
 build_script:
     - PCbuild\build.bat
