@@ -133,7 +133,7 @@ SEEK_END = 2
 # Super directory utilities.
 # (Inspired by Eric Raymond; the doc strings are mostly his)
 
-def makedirs(name, mode=0777):
+def makedirs(name, mode=0777, exist_ok=False):
     """makedirs(path [, mode=0777])
 
     Super-mkdir; create a leaf directory and all intermediate ones.
@@ -154,7 +154,13 @@ def makedirs(name, mode=0777):
                 raise
         if tail == curdir:           # xxx/newdir/. exists if xxx/newdir exists
             return
-    mkdir(name, mode)
+    try:
+	mkdir(name, mode)
+    except OSError, e:
+	if (e.errno == errno.EEXIST) and exist_ok:
+	    pass
+	else:
+	    raise
 
 def removedirs(name):
     """removedirs(path)
