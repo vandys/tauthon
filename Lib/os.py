@@ -155,12 +155,12 @@ def makedirs(name, mode=0777, exist_ok=False):
         if tail == curdir:           # xxx/newdir/. exists if xxx/newdir exists
             return
     try:
-	mkdir(name, mode)
+        mkdir(name, mode)
     except OSError, e:
-	if (e.errno == errno.EEXIST) and exist_ok:
-	    pass
-	else:
-	    raise
+        if (e.errno == errno.EEXIST) and exist_ok:
+            pass
+        else:
+            raise
 
 def removedirs(name):
     """removedirs(path)
