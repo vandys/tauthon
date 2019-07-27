@@ -356,7 +356,16 @@ class CommonTest(seq_tests.CommonTest):
         u = self.type2test([0, 1])
         self.assertEqual(u.index(0), 0)
         self.assertEqual(u.index(1), 1)
+        self.assertEqual(u.rindex(0), 0)
+        self.assertEqual(u.rindex(1), 1)
+        self.assertEqual(u.find(0), 0)
+        self.assertEqual(u.find(1), 1)
+        self.assertEqual(u.rfind(0), 0)
+        self.assertEqual(u.rfind(1), 1)
         self.assertRaises(ValueError, u.index, 2)
+        self.assertRaises(ValueError, u.rindex, 2)
+        self.assertEqual(u.find(2), -1)
+        self.assertEqual(u.rfind(2), -1)
 
         u = self.type2test([-2, -1, 0, 0, 1, 2])
         self.assertEqual(u.count(0), 2)
@@ -365,7 +374,25 @@ class CommonTest(seq_tests.CommonTest):
         self.assertEqual(u.index(-2, -10), 0)
         self.assertEqual(u.index(0, 3), 3)
         self.assertEqual(u.index(0, 3, 4), 3)
+        self.assertEqual(u.rindex(0), 3)
+        self.assertEqual(u.rindex(0, 2), 3)
+        self.assertEqual(u.rindex(-2, -10), 0)
+        self.assertEqual(u.rindex(0, 3), 3)
+        self.assertEqual(u.rindex(0, 3, 4), 3)
+        self.assertEqual(u.find(0), 2)
+        self.assertEqual(u.find(0, 2), 2)
+        self.assertEqual(u.find(-2, -10), 0)
+        self.assertEqual(u.find(0, 3), 3)
+        self.assertEqual(u.find(0, 3, 4), 3)
+        self.assertEqual(u.rfind(0), 3)
+        self.assertEqual(u.rfind(0, 2), 3)
+        self.assertEqual(u.rfind(-2, -10), 0)
+        self.assertEqual(u.rfind(0, 3), 3)
+        self.assertEqual(u.rfind(0, 3, 4), 3)
         self.assertRaises(ValueError, u.index, 2, 0, -10)
+        self.assertRaises(ValueError, u.rindex, 2, 0, -10)
+        self.assertEqual(u.find(2, 0, -10), -1)
+        self.assertEqual(u.rfind(2, 0, -10), -1)
 
         self.assertRaises(TypeError, u.index)
 
@@ -380,6 +407,12 @@ class CommonTest(seq_tests.CommonTest):
 
         a = self.type2test([0, 1, 2, 3])
         self.assertRaises(BadExc, a.index, BadCmp())
+        a = self.type2test([0, 1, 2, 3])
+        self.assertRaises(BadExc, a.rindex, BadCmp())
+        a = self.type2test([0, 1, 2, 3])
+        self.assertRaises(BadExc, a.find, BadCmp())
+        a = self.type2test([0, 1, 2, 3])
+        self.assertRaises(BadExc, a.rfind, BadCmp())
 
         a = self.type2test([-2, -1, 0, 0, 1, 2])
         self.assertEqual(a.index(0), 2)
@@ -391,10 +424,29 @@ class CommonTest(seq_tests.CommonTest):
         self.assertEqual(a.index(0, 3, 4), 3)
         self.assertEqual(a.index(0, -3, -2), 3)
         self.assertEqual(a.index(0, -4*sys.maxint, 4*sys.maxint), 2)
+        self.assertEqual(a.rindex(0), 3)
+        self.assertEqual(a.rindex(0, 2), 3)
+        self.assertEqual(a.rindex(0, -4), 3)
+        self.assertEqual(a.rindex(-2, -10), 0)
+        self.assertEqual(a.rindex(0, 3), 3)
+        self.assertEqual(a.rindex(0, -3), 3)
+        self.assertEqual(a.rindex(0, 3, 4), 3)
+        self.assertEqual(a.rindex(0, -3, -2), 3)
+        self.assertEqual(a.rindex(0, -4*sys.maxint, 4*sys.maxint), 3)
         self.assertRaises(ValueError, a.index, 0, 4*sys.maxint,-4*sys.maxint)
         self.assertRaises(ValueError, a.index, 2, 0, -10)
+        self.assertRaises(ValueError, a.rindex, 0, 4*sys.maxint,-4*sys.maxint)
+        self.assertRaises(ValueError, a.rindex, 2, 0, -10)
+        self.assertEqual(a.find(0, 4*sys.maxint,-4*sys.maxint), -1)
+        self.assertEqual(a.find(2, 0, -10), -1)
+        self.assertEqual(a.rfind(0, 4*sys.maxint,-4*sys.maxint), -1)
+        self.assertEqual(a.rfind(2, 0, -10), -1)
+
         a.remove(0)
         self.assertRaises(ValueError, a.index, 2, 0, 4)
+        self.assertRaises(ValueError, a.rindex, 2, 0, 4)
+        self.assertEqual(a.find(2, 0, 4), -1)
+        self.assertEqual(a.rfind(2, 0, 4), -1)
         self.assertEqual(a, self.type2test([-2, -1, 0, 1, 2]))
 
         # Test modifying the list during index's iteration
@@ -408,6 +460,15 @@ class CommonTest(seq_tests.CommonTest):
         a[:] = [EvilCmp(a) for _ in xrange(100)]
         # This used to seg fault before patch #1005778
         self.assertRaises(ValueError, a.index, None)
+        a = self.type2test()
+        a[:] = [EvilCmp(a) for _ in xrange(100)]
+        self.assertRaises(ValueError, a.rindex, None)
+        a = self.type2test()
+        a[:] = [EvilCmp(a) for _ in xrange(100)]
+        self.assertEqual(a.find(None), -1)
+        a = self.type2test()
+        a[:] = [EvilCmp(a) for _ in xrange(100)]
+        self.assertEqual(a.rfind(None), -1)
 
     def test_reverse(self):
         u = self.type2test([-2, -1, 0, 1, 2])

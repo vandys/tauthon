@@ -2317,6 +2317,134 @@ listindex(PyListObject *self, PyObject *args)
     Py_DECREF(err_string);
     return NULL;
 }
+static PyObject *
+listrindex(PyListObject *self, PyObject *args)
+{
+    Py_ssize_t i, start=0, stop=Py_SIZE(self);
+    PyObject *v, *format_tuple, *err_string;
+    static PyObject *err_format = NULL;
+
+    if (!PyArg_ParseTuple(args, "O|O&O&:index", &v,
+                                _PyEval_SliceIndexNotNone, &start,
+                                _PyEval_SliceIndexNotNone, &stop)) {
+        return NULL;
+    }
+    if (start < 0) {
+        start += Py_SIZE(self);
+        if (start < 0) {
+            start = 0;
+	}
+    }
+    if (stop < 0) {
+        stop += Py_SIZE(self);
+        if (stop < 0) {
+            stop = 0;
+	}
+    }
+    if (stop > Py_SIZE(self)) {
+        stop = Py_SIZE(self);
+    }
+    for (i = stop-1; (i >= start) && (i < Py_SIZE(self)); --i) {
+        int cmp = PyObject_RichCompareBool(self->ob_item[i], v, Py_EQ);
+        if (cmp > 0) {
+            return PyInt_FromSsize_t(i);
+	}
+        if (cmp < 0) {
+            return NULL;
+	}
+    }
+    if (err_format == NULL) {
+        err_format = PyString_FromString("%r is not in list");
+        if (err_format == NULL) {
+            return NULL;
+	}
+    }
+    format_tuple = PyTuple_Pack(1, v);
+    if (format_tuple == NULL) {
+        return NULL;
+    }
+    err_string = PyString_Format(err_format, format_tuple);
+    Py_DECREF(format_tuple);
+    if (err_string == NULL) {
+        return NULL;
+    }
+    PyErr_SetObject(PyExc_ValueError, err_string);
+    Py_DECREF(err_string);
+    return NULL;
+}
+
+static PyObject *
+listfind(PyListObject *self, PyObject *args)
+{
+    Py_ssize_t i, start=0, stop=Py_SIZE(self);
+    PyObject *v;
+
+    if (!PyArg_ParseTuple(args, "O|O&O&:index", &v,
+			    _PyEval_SliceIndexNotNone, &start,
+			    _PyEval_SliceIndexNotNone, &stop)) {
+        return NULL;
+    }
+    if (start < 0) {
+        start += Py_SIZE(self);
+        if (start < 0) {
+            start = 0;
+	}
+    }
+    if (stop < 0) {
+        stop += Py_SIZE(self);
+        if (stop < 0) {
+            stop = 0;
+	}
+    }
+    for (i = start; (i < stop) && (i < Py_SIZE(self)); i++) {
+        int cmp = PyObject_RichCompareBool(self->ob_item[i], v, Py_EQ);
+        if (cmp > 0) {
+            return PyInt_FromSsize_t(i);
+        }
+	if (cmp < 0) {
+            return NULL;
+	}
+    }
+    return PyInt_FromLong(-1);
+}
+
+static PyObject *
+listrfind(PyListObject *self, PyObject *args)
+{
+    Py_ssize_t i, start=0, stop=Py_SIZE(self);
+    PyObject *v;
+
+    if (!PyArg_ParseTuple(args, "O|O&O&:index", &v,
+			    _PyEval_SliceIndexNotNone, &start,
+			    _PyEval_SliceIndexNotNone, &stop)) {
+        return NULL;
+    }
+    if (start < 0) {
+        start += Py_SIZE(self);
+        if (start < 0) {
+            start = 0;
+	}
+    }
+    if (stop < 0) {
+        stop += Py_SIZE(self);
+        if (stop < 0) {
+            stop = 0;
+	}
+    }
+    if (stop > Py_SIZE(self)) {
+        stop = Py_SIZE(self);
+    }
+    for (i = stop-1; (i >= start) && (i < Py_SIZE(self)); --i) {
+        int cmp = PyObject_RichCompareBool(self->ob_item[i], v, Py_EQ);
+        if (cmp > 0) {
+            return PyInt_FromSsize_t(i);
+        }
+	if (cmp < 0) {
+            return NULL;
+	}
+    }
+    return PyInt_FromLong(-1);
+}
 
 static PyObject *
 listcount(PyListObject *self, PyObject *v)
@@ -2497,6 +2625,15 @@ PyDoc_STRVAR(remove_doc,
 PyDoc_STRVAR(index_doc,
 "L.index(value, [start, [stop]]) -> integer -- return first index of value.\n"
 "Raises ValueError if the value is not present.");
+PyDoc_STRVAR(rindex_doc,
+"L.rindex(value, [start, [stop]]) -> integer -- return last index of value.\n"
+"Raises ValueError if the value is not present.");
+PyDoc_STRVAR(find_doc,
+"L.find(value, [start, [stop]]) -> integer -- return first index of value.\n"
+"Returns -1 if the value is not present.");
+PyDoc_STRVAR(rfind_doc,
+"L.rfind(value, [start, [stop]]) -> integer -- return last index of value.\n"
+"Returns -1 if the value is not present.");
 PyDoc_STRVAR(count_doc,
 "L.count(value) -> integer -- return number of occurrences of value");
 PyDoc_STRVAR(reverse_doc,
@@ -2517,6 +2654,9 @@ static PyMethodDef list_methods[] = {
     {"pop",             (PyCFunction)listpop,     METH_VARARGS, pop_doc},
     {"remove",          (PyCFunction)listremove,  METH_O, remove_doc},
     {"index",           (PyCFunction)listindex,   METH_VARARGS, index_doc},
+    {"rindex",          (PyCFunction)listrindex,  METH_VARARGS, rindex_doc},
+    {"find",            (PyCFunction)listfind,    METH_VARARGS, find_doc},
+    {"rfind",           (PyCFunction)listrfind,   METH_VARARGS, rfind_doc},
     {"count",           (PyCFunction)listcount,   METH_O, count_doc},
     {"reverse",         (PyCFunction)listreverse, METH_NOARGS, reverse_doc},
     {"sort",            (PyCFunction)listsort,    METH_VARARGS | METH_KEYWORDS, sort_doc},

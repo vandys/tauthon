@@ -1647,6 +1647,9 @@ an arbitrary object):
    single: extend() (list method)
    single: count() (list method)
    single: index() (list method)
+   single: rindex() (list method)
+   single: find() (list method)
+   single: rfind() (list method)
    single: insert() (list method)
    single: pop() (list method)
    single: remove() (list method)
@@ -1687,6 +1690,18 @@ an arbitrary object):
 |                              | ``s[k] == x`` and ``i <= k <   |                     |
 |                              | j``                            |                     |
 +------------------------------+--------------------------------+---------------------+
+| ``s.rindex(x[, i[, j]])``    | return largest *k* such that   | \(4)                |
+|                              | ``s[k] == x`` and ``i <= k <   |                     |
+|                              | j``                            |                     |
++------------------------------+--------------------------------+---------------------+
+| ``s.find(x[, i[, j]])``      | return smallest *k* such that  | \(4)                |
+|                              | ``s[k] == x`` and ``i <= k <   |                     |
+|                              | j``                            |                     |
++------------------------------+--------------------------------+---------------------+
+| ``s.rfind(x[, i[, j]])``     | return largest *k* such that   | \(4)                |
+|                              | ``s[k] == x`` and ``i <= k <   |                     |
+|                              | j``                            |                     |
++------------------------------+--------------------------------+---------------------+
 | ``s.insert(i, x)``           | same as ``s[i:i] = [x]``       | \(5)                |
 +------------------------------+--------------------------------+---------------------+
 | ``s.pop([i])``               | same as ``x = s[i]; del s[i];  | \(6)                |
@@ -1715,7 +1730,9 @@ Notes:
    *t* can be any iterable object.
 
 (4)
-   Raises :exc:`ValueError` when *x* is not found in *s*. When a negative index is
+   For index and rindex, raises :exc:`ValueError` when *x* is not found in *s*.
+   For find and rfind, the value -1 is returned instead.
+   When a negative index is
    passed as the second or third parameter to the :meth:`index` method, the list
    length is added, as for slice indices.  If it is still negative, it is truncated
    to zero, as for slice indices.
