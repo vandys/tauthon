@@ -79,6 +79,9 @@ class UserList(collections.MutableSequence):
     def remove(self, item): self.data.remove(item)
     def count(self, item): return self.data.count(item)
     def index(self, item, *args): return self.data.index(item, *args)
+    def rindex(self, item, *args): return self.data.rindex(item, *args)
+    def find(self, item, *args): return self.data.find(item, *args)
+    def rfind(self, item, *args): return self.data.rfind(item, *args)
     def reverse(self): self.data.reverse()
     def sort(self, *args, **kwds): self.data.sort(*args, **kwds)
     def extend(self, other):

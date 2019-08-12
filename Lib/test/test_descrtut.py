@@ -214,11 +214,14 @@ Instead, you can get the same information from the list type:
      'append',
      'count',
      'extend',
+     'find',
      'index',
      'insert',
      'pop',
      'remove',
      'reverse',
+     'rfind',
+     'rindex',
      'sort']
 
 The new introspection API gives more information than the old one:  in
