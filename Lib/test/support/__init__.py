@@ -23,6 +23,7 @@ import time
 import struct
 import sysconfig
 import types
+import fcntl
 
 try:
     import thread
@@ -2093,6 +2094,18 @@ def fd_count():
             MAXFD = os.sysconf("SC_OPEN_MAX")
         except OSError:
             pass
+
+    # MacOS Darwin can have untouchable file descriptors; dup'ing them SIGKILL's
+    #  your process.  Use fcntl to avoid tripping over one of these.
+    if sys.platform.startswith('darwin'):
+        count = 0
+        for fd in range(MAXFD):
+            try:
+                flags = fcntl.fcntl(fd, fcntl.F_GETFD)
+                count += 1
+            except:
+                continue
+        return count
 
     old_modes = None
     if sys.platform == 'win32':
